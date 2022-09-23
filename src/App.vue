@@ -32,8 +32,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(tarefa, indice) in listaTarefas" :key="indice"
-                  :class="tarefa.feita ? 'lighten-4 orange' : ''">
+                <tr v-for="(tarefa, indice) in tarefas" :key="indice" :class="tarefa.feita ? 'lighten-4 orange' : ''">
                   <td class="text-left">{{ tarefa.descricao }}</td>
                   <td class="text-left">
                     <v-btn class="blue lighten-1 white--text" v-if="!tarefa.feita" @click="alteraStatusTarefa(tarefa)">
@@ -65,9 +64,25 @@ export default {
       descricao: "",
       feita: false,
     },
-    listaTarefas: [],
+    tarefas: [],
   }),
+
+  mounted: {
+    lerTarefas() {
+      this.readLista();
+    },
+  },
   methods: {
+
+    addLocal() {
+      window.localStorage.setItem('listaTarefas', JSON.stringify(this.tarefas));
+    },
+
+    readLista() {
+      var listaDisc = JSON.parse(window.localStorage.getItem('listaTarefas'));
+      this.tarefas = (listaDisc != null) ? listaDisc : [];
+    },
+
     limpaTarefa() {
       this.tarefa = {
         descricao: "",
@@ -75,11 +90,15 @@ export default {
       };
     },
     salvarTarefa() {
-      this.listaTarefas.push(this.tarefa);
-      this.limpaTarefa();
+      if (this.tarefa.descricao != null) {
+        this.tarefas.push(this.tarefa);
+        this.addLocal();
+        this.limpaTarefa();
+      }
     },
     alteraStatusTarefa(t) {
       t.feita = !t.feita;
+      this.addLocal();
     },
   },
 };
