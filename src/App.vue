@@ -67,11 +67,6 @@ export default {
     tarefas: [],
   }),
 
-  mounted: {
-    lerTarefas() {
-      this.readLista();
-    },
-  },
   methods: {
 
     addLocal() {
@@ -89,6 +84,7 @@ export default {
         feita: false,
       };
     },
+
     salvarTarefa() {
       if (this.tarefa.descricao != null) {
         this.tarefas.push(this.tarefa);
@@ -96,10 +92,17 @@ export default {
         this.limpaTarefa();
       }
     },
+
     alteraStatusTarefa(t) {
       t.feita = !t.feita;
       this.addLocal();
     },
+
   },
+
+  beforeMount() {
+    this.readLista();
+  },
+
 };
 </script>
