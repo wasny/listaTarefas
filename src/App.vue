@@ -12,12 +12,18 @@
           <v-col offset-lg="2" lg="8" md="12">
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="tarefa.descricao" label="Descrição"></v-text-field>
+                <v-text-field v-model="tarefa.descricao" label="Descrição"
+                  placeholder="Digite o item de sua Lista de Tarefas"
+                  title="Digite aqui o item de sua Lista de Tarefas"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" class="text-right">
                 <v-btn class="primary" @click="salvarTarefa">Salvar</v-btn>
+                <v-btn class="red" onclick="excluir()" title="Clique para excluir o item desta lista">
+                  Excluir</v-btn>
+                <v-btn class="orange" @click="limpaTarefa"
+                  title="Clique para limpar as informações, sem efetuar mudanças">Limpar</v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -33,7 +39,7 @@
               </thead>
               <tbody>
                 <tr v-for="(tarefa, indice) in tarefas" :key="indice" :class="tarefa.feita ? 'lighten-4 orange' : ''">
-                  <td class="text-left">{{ tarefa.descricao }}</td>
+                  <td class="text-left" @click="seleciona(indice)">{{ tarefa.descricao }}</td>
                   <td class="text-left">
                     <v-btn class="blue lighten-1 white--text" v-if="!tarefa.feita" @click="alteraStatusTarefa(tarefa)">
                       <v-icon left> mdi-clipboard-text-off-outline </v-icon>Feito
@@ -65,6 +71,7 @@ export default {
       feita: false,
     },
     tarefas: [],
+    indice: -1,
   }),
 
   methods: {
@@ -86,11 +93,14 @@ export default {
     },
 
     salvarTarefa() {
-      if (this.tarefa.descricao != null) {
+      if ((this.indice < 0) && (this.tarefa.descricao != null)) {
         this.tarefas.push(this.tarefa);
-        this.addLocal();
-        this.limpaTarefa();
+      } else {
+        this.tarefas.splice(this.indice, 1, this.tarefa);
       }
+      this.addLocal();
+      this.limpaTarefa();
+
     },
 
     alteraStatusTarefa(t) {
@@ -98,6 +108,10 @@ export default {
       this.addLocal();
     },
 
+    seleciona(indice) {
+      let listaTarefas = JSON.parse(window.localStorage.getItem('listaTarefas'));
+      this.tarefa = listaTarefas[indice];
+    },
   },
 
   beforeMount() {
